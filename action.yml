@@ -1,0 +1,52 @@
+name: 'Buck2 releases'
+description: 'Download Buck2 pre-compiled binaries from the official repository.'
+author: 'zadig'
+inputs:
+  release-tag:
+    description: 'Release tag'
+    required: true
+    default: '2024-02-15'
+  arch:
+    description: 'Architecture'
+    required: true
+    default: 'x86_64'
+  platform:
+    description: 'Platform'
+    required: true
+    default: 'unknown-linux-gnu'
+  sha384:
+    description: 'SHA384'
+    required: true
+    default: '1442f2b6c1dfe0071a6c0cf3d3038e5b2b1488593555f60371c5fd1efa6d6fc4a4dc880203ddce699ba2100ce18092d7'
+  output-path:
+    description: 'Output path'
+    required: true
+    default: '/usr/bin/buck2'
+runs:
+  using: "composite"
+  steps:
+    - name: Download dependencies
+      shell: bash
+      run: sudo apt-get update && sudo apt-get install -y curl zstd
+
+    - name: Download buck2 binary
+      shell: bash
+      run: |
+        URL="$(printf 'https://github.com/facebook/buck2/releases/download/%s/buck2-%s-%s.zst' "${{ inputs.release-tag }}" "${{ inputs.arch }}" "${{ inputs.platform }}")"
+        curl -Lo /tmp/buck2.zst "${URL}"
+
+    - name: Verify SHA-384 sum
+      shell: bash
+      run: printf '%s  %s' "/tmp/buck2.zst" "${{ inputs.sha384 }}" | shasum -a 384
+
+    - name: Uncompress the binary
+      shell: bash
+      run: |
+        zstd -d /tmp/buck2.zst -o /tmp/buck2
+        rm /tmp/buck2.zst
+
+    - name: Move the binary to its final location
+      shell: bash
+      run: |
+        chmod +x /tmp/buck2
+        sudo mv /tmp/buck2 "${{ inputs.output-path }}"
