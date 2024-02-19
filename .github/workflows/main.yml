@@ -1,9 +1,9 @@
 on: [push]
 
 jobs:
-  buck2_default_job:
+  buck2_linux:
     runs-on: ubuntu-latest
-    name: A job to try our buck2 composite action
+    name: A job to try our buck2 composite action on ubuntu.
     steps:
       - uses: actions/checkout@v4
       - name: Use buck2 composite action
@@ -11,3 +11,19 @@ jobs:
       - name: Verify that buck2 binary is available
         run: |
           /usr/bin/buck2 --version
+
+  buck2_macos:
+    runs-on: macos-13
+    name: A job to try our buck2 composite action on macOS.
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use buck2 composite action
+        uses: zadlg/buck2-github-composite-action@v3
+        with:
+          arch: x86_64
+          platform: apple-darwin
+          sha384: 230272fa57843a024759187e5606859755250e612a288122ea91ce54f5e602186dfc8cd06c9e895c7d66954b16c9f92
+          output-path: /usr/local/bin/buck2
+      - name: Verify that buck2 binary is available
+        run: |
+          /usr/local/bin/buck2 --version
