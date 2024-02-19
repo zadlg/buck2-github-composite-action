@@ -1,6 +1,9 @@
-name: 'Buck2 releases'
-description: 'Download Buck2 pre-compiled binaries from the official repository.'
+name: 'Setup Buck2'
+description: 'Cross platform Buck2 installation for your workflows. Download Buck2 pre-compiled binaries from the official repository.'
 author: 'zadig'
+branding:
+  icon: 'code'
+  color: 'blue'
 inputs:
   release-tag:
     description: 'Release tag'
