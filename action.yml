@@ -30,7 +30,15 @@ runs:
   steps:
     - name: Download dependencies
       shell: bash
-      run: sudo apt-get update && sudo apt-get install -y curl zstd
+      run: |
+        os=$(uname -s)
+        if [ "${os}" = "Darwin" ]; then
+          brew update && brew install curl zstd
+        elif [ "${os}" = "Linux" ]; then
+          sudo apt-get update && sudo apt-get install -y curl zstd
+        else
+          printf "Unsupported OS %s\n" "${os}"
+        fi
 
     - name: Download buck2 binary
       shell: bash
